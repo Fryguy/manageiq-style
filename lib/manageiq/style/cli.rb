@@ -40,9 +40,7 @@ module ManageIQ
         update_gem_source
       end
 
-      private
-
-      def update_rubocop_yml(file = ".rubocop.yml")
+      private def update_rubocop_yml(file = ".rubocop.yml")
         data = begin
           YAML.load_file(file)
         rescue Errno::ENOENT
@@ -55,17 +53,17 @@ module ManageIQ
         File.write(file, data.to_yaml.sub("---\n", ""))
       end
 
-      def ensure_rubocop_local_yml_exists(file = ".rubocop_local.yml")
+      private def ensure_rubocop_local_yml_exists(file = ".rubocop_local.yml")
         FileUtils.touch(file)
       end
 
-      def ensure_haml_lint_yml(file = ".haml-lint.yml")
+      private def ensure_haml_lint_yml(file = ".haml-lint.yml")
         return if File.exist?(file)
 
         FileUtils.ln_s(".rubocop.yml", file)
       end
 
-      def update_yamllint(file = ".yamllint")
+      private def update_yamllint(file = ".yamllint")
         data = begin
           YAML.load_file(file)
         rescue Errno::ENOENT
@@ -85,7 +83,7 @@ module ManageIQ
         File.write(file, data.to_yaml.sub("---\n", ""))
       end
 
-      def update_gem_source
+      private def update_gem_source
         if (gemspec = Dir.glob("*.gemspec").first)
           update_gemspec(gemspec)
         elsif File.exist?("Gemfile")
@@ -93,7 +91,7 @@ module ManageIQ
         end
       end
 
-      def update_gemspec(gemspec)
+      private def update_gemspec(gemspec)
         contents = File.read(gemspec)
         return if contents.include?("manageiq-style")
 
@@ -127,7 +125,7 @@ module ManageIQ
         File.write(gemspec, lines.join)
       end
 
-      def update_gemfile
+      private def update_gemfile
         contents = File.read("Gemfile")
         return if contents.include?("manageiq-style")
 
@@ -172,7 +170,7 @@ module ManageIQ
         File.write("Gemfile", lines.join)
       end
 
-      def format_gem_source_lines!(lines)
+      private def format_gem_source_lines!(lines)
         indent = lines.first.match(/^\s+/).to_s
 
         lines.map! { |l| l.strip.gsub(/[()]/, " ").split(" ", 3) }             # Split to [prefix, gem, versions]
@@ -184,7 +182,7 @@ module ManageIQ
         lines
       end
 
-      def update_generator
+      private def update_generator
         plugin_dir = "lib/generators/manageiq/plugin/templates"
 
         return unless File.directory?(plugin_dir)
@@ -193,7 +191,7 @@ module ManageIQ
         ensure_rubocop_local_yml_exists(File.join(plugin_dir, ".rubocop_local.yml"))
       end
 
-      def rubocop_version
+      private def rubocop_version
         @rubocop_version ||= begin
           require 'rubocop'
           Gem::Version.new(RuboCop::Version.version)
